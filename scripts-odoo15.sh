@@ -5,6 +5,7 @@
 
 ##fixed parameters
 #odoo
+#declaration des variables pour la creation de l'utilisateur
 OE_USER="odoo"
 OE_HOME="/opt/$OE_USER"
 OE_HOME_EXT="/opt/$OE_USER/odoo-server"
