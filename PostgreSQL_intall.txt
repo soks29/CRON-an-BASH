@@ -1,0 +1,43 @@
+Step 1 — Installing PostgreSQL
+=> sudo apt update
+=> sudo apt install postgresql postgresql-contrib
+=> sudo systemctl start postgresql.service #demarrer le service PostgreSql
+
+Step 2 — Using PostgreSQL Roles and Databases
+=> sudo -i -u postgres      #se connecter avec l'utilisateur postgres creer par defaut lors de l'installation
+=> psql                     #accéder à l'invite prompt Postgres en exécutant
+=> \q                       #pour quitter le prompt psql
+=> exit                     #pour ce deconnecter de l'utilisateur postgres
+
+Step 3 - Créer un nouveau rôle
+=> sudo -u postgres createuser --interactive
+
+Step 4 - Création d'une nouvelle base de données
+=> sudo -u postgres createdb name_db
+
+Step 5 - Ouverture d'une invite Postgres avec le nouveau rôle
+=> sudo adduser sammy
+=> sudo -u sammy psql
+
+#
+# Setup the repository
+#
+
+# Install the public key for the repository (if not done previously):
+curl -fsS https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo gpg --dearmor -o /usr/share/keyrings/packages-pgadmin-org.gpg
+
+# Create the repository configuration file:
+sudo sh -c 'echo "deb [signed-by=/usr/share/keyrings/packages-pgadmin-org.gpg] https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/$(lsb_release -cs) pgadmin4 main" > /etc/apt/sources.list.d/pgadmin4.list && apt update'
+
+#
+# Install pgAdmin
+#
+
+# Install for both desktop and web modes:
+sudo apt install pgadmin4
+
+# Install for desktop mode only:
+sudo apt install pgadmin4-desktop
+
+# Install for web mode only:
+sudo apt install pgadmin4-web
