@@ -5,7 +5,7 @@
 
 ##fixed parameters
 #odoo
-#declaration des variables pour la creation de l'utilisateur
+#declaration des variables pour la creation de l'utilisateur odoo
 OE_USER="odoo"
 OE_HOME="/opt/$OE_USER"
 OE_HOME_EXT="/opt/$OE_USER/odoo-server"
@@ -13,10 +13,10 @@ OE_HOME_EXT="/opt/$OE_USER/odoo-server"
 #Set to true if you want to install it, false if you don't need it or have it already installed.
 INSTALL_WKHTMLTOPDF="True"
 #Set to true if you want to install it, false if you don't need it or have it already installed.
-INSTALL_POSTGRESQL="True"
-CREATE_USER_POSTGRESQL="True"
-INSTALL_NGINX = "True"
-ADD_SSL = "False"
+INSTALL_POSTGRESQL="True" #verification du package POSTGRESQL si installer
+CREATE_USER_POSTGRESQL="True"# creation de l'utilisateur POSTGRESQL
+INSTALL_NGINX = "True"# installer le package NGNIX qui est un logiciel libre de serveur Web ainsi qu'un proxy inverse écrit par Igor Sysoev
+ADD_SSL = "False" #n'utilise pas le protocole SSL (Secure Socket Layer) et aussi ses cle
 SSL_PEM_KEY = "False"
 SSL_PRV_KEY = "False"
 #Set the default Odoo port (you still have to use -c /etc/odoo-server.conf for example to use this.)
@@ -31,13 +31,14 @@ IS_ENTERPRISE="True"
 OE_SUPERADMIN="@8zz%&RBtAN78!Cms5@1"
 OE_CONFIG="${OE_USER}-server"
 
+#declaration des variables pour la gestion de la base de donne en local, utilisant le port 5432 et le mot de pass 'LEGEND'
 #Set the database config
 DB_HOST="127.0.0.1"
 DB_PORT="5432"
 DB_USER=$OE_USER
 DB_PASSWORD="LEGEND"
 
-
+#declaration des variables pour la recuperation de tous les modules github de l'association de la communaute Odoo( le utilisateur d'odoo)
 # OCA Modules
 REP_OCA_WEB="https://github.com/OCA/web.git"
 REP_OCA_SERVER_TOOLS="https://github.com/OCA/server-tools.git"
@@ -54,12 +55,14 @@ REP_CUSTOM_1_BRANCH=$OE_VERSION
 ## === Ubuntu Trusty x64 & x32 === (for other distributions please replace these two links,
 ## in order to have correct version of wkhtmltox installed, for a danger note refer to
 ## https://www.odoo.com/documentation/8.0/setup/install.html#deb ):
+#recuperation du package WKHTMLTOX selon le systeme utiliser depuis github, ce package permetant la conversion du fichier HTML en PDF
 WKHTMLTOX_X64=https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.bionic_amd64.deb
 WKHTMLTOX_X32=https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.bionic_i386.deb
 
 #--------------------------------------------------
 # Update Server
 #--------------------------------------------------
+#Mise a jour et mise a niveau de notre systeme Linux(UBUNTU)
 echo -e "\n---- Update Server ----"
 sudo apt-get update
 sudo apt-get upgrade -y
@@ -67,7 +70,7 @@ sudo apt-get upgrade -y
 #--------------------------------------------------
 # Install PostgreSQL Server
 #--------------------------------------------------
-
+#verification du package PostgreSQL depuis la variable declarer, si vrai, on force l'installation sinon on installe le package postgresql-client-common
 if [ $INSTALL_POSTGRESQL = "True" ]; then
 	echo -e "\n---- Install PostgreSQL Server ----"
 	sudo apt-get install postgresql -y
@@ -79,7 +82,7 @@ else
 	sudo apt-get install -y postgresql-client
 	echo -e "\n POSTGRESQL isn't installed due to the choice of the user! and no postgresql user have been created"
 fi
-
+# installation des package de dependance a l'utilisation d'odoo
 sudo apt-get install --reinstall libpq-dev
 #psql -U postgres -c "ALTER USER $OE_USER WITH PASSWORD '$DB_PASSWORD'"
 #--------------------------------------------------
@@ -152,6 +155,7 @@ sudo adduser $OE_USER sudo
 echo -e "\n---- Create Log directory ----"
 sudo mkdir /var/log/$OE_USER
 sudo chown $OE_USER:$OE_USER /var/log/$OE_USER
+
 
 #--------------------------------------------------
 # Install ODOO

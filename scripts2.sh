@@ -4,7 +4,7 @@
 JOUR=$(date +%Y%m%d)
 
 #creation d'un fichier avec le jour, le mois et l'annee preceder par le mot fichier sur le bureau
-touch /home/karizma/Bureau/$JOURfichier.txt
+touch /home/karizma/Bureau/${JOUR}file.txt
 
 ###
 
