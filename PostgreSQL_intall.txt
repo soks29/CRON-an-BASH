@@ -9,6 +9,8 @@ Step 2 — Using PostgreSQL Roles and Databases
 => \q                       #pour quitter le prompt psql
 => exit                     #pour ce deconnecter de l'utilisateur postgres
 
+
+
 Step 3 - Créer un nouveau rôle
 => sudo -u postgres createuser --interactive
 
