@@ -3,9 +3,9 @@
 # Author: Abdelmajid Elhamdaoui. Refrence: Yenthe Van Ginneken
 ################################################################################
 
+
 ##fixed parameters
 #odoo
-#declaration des variables pour la creation de l'utilisateur odoo
 OE_USER="odoo16"
 OE_HOME="/opt/$OE_USER"
 OE_HOME_EXT="/opt/$OE_USER/odoo-server"
@@ -13,15 +13,15 @@ OE_HOME_EXT="/opt/$OE_USER/odoo-server"
 #Set to true if you want to install it, false if you don't need it or have it already installed.
 INSTALL_WKHTMLTOPDF="True"
 #Set to true if you want to install it, false if you don't need it or have it already installed.
-INSTALL_POSTGRESQL="True" #verification du package POSTGRESQL si installer
-CREATE_USER_POSTGRESQL="True"# creation de l'utilisateur POSTGRESQL
-INSTALL_NGINX = "True"# installer le package NGNIX qui est un logiciel libre de serveur Web ainsi qu'un proxy inverse écrit par Igor Sysoev
-ADD_SSL = "False" #n'utilise pas le protocole SSL (Secure Socket Layer) et aussi ses cle
-SSL_PEM_KEY = "False"
-SSL_PRV_KEY = "False"
+INSTALL_POSTGRESQL="False"
+CREATE_USER_POSTGRESQL="True"
+INSTALL_NGINX="True"
+ADD_SSL="False"
+SSL_PEM_KEY="False"
+SSL_PRV_KEY="False"
 #Set the default Odoo port (you still have to use -c /etc/odoo-server.conf for example to use this.)
 OE_PORT="8016"
-SERVER_NAME = "localhost" # test.odoo.com || 13.17.16.15
+SERVER_NAME="localhost" # test.odoo.com || 13.17.16.15
 #Choose the Odoo version which you want to install. For example: 10.0, 9.0, 8.0, 7.0 or saas-6. When using 'trunk' the master version will be installed.
 #IMPORTANT! This script contains extra libraries that are specifically needed for Odoo 10.0
 OE_VERSION="16.0"
@@ -31,14 +31,17 @@ IS_ENTERPRISE="True"
 OE_SUPERADMIN="@8zz%&RBtAN78!Cms5@1"
 OE_CONFIG="${OE_USER}-server"
 
-#declaration des variables pour la gestion de la base de donne en local, utilisant le port 5432 et le mot de pass 'LEGEND'
 #Set the database config
 DB_HOST="127.0.0.1"
 DB_PORT="5432"
 DB_USER=$OE_USER
 DB_PASSWORD="LEGEND"
 
-#declaration des variables pour la recuperation de tous les modules github de l'association de la communaute Odoo( le utilisateur d'odoo)
+ENABLE_SSL="False"
+ADMIN_EMAIL="odoo@example.com"
+WEBSITE_NAME="_"
+
+
 # OCA Modules
 REP_OCA_WEB="https://github.com/OCA/web.git"
 REP_OCA_SERVER_TOOLS="https://github.com/OCA/server-tools.git"
@@ -53,16 +56,14 @@ REP_CUSTOM_1_BRANCH=$OE_VERSION
 ##
 ###  WKHTMLTOPDF download links
 ## === Ubuntu Trusty x64 & x32 === (for other distributions please replace these two links,
-## in order to have correct version of wkhtmltox installed, for a danger note refer to
+## in order to have correct version of wkhtmltox installed, for a danger note refer to 
 ## https://www.odoo.com/documentation/8.0/setup/install.html#deb ):
-#recuperation du package WKHTMLTOX selon le systeme utiliser depuis github, ce package permetant la conversion du fichier HTML en PDF
 WKHTMLTOX_X64=https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.bionic_amd64.deb
 WKHTMLTOX_X32=https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.bionic_i386.deb
 
 #--------------------------------------------------
 # Update Server
 #--------------------------------------------------
-#Mise a jour et mise a niveau de notre systeme Linux(UBUNTU)
 echo -e "\n---- Update Server ----"
 sudo apt-get update
 sudo apt-get upgrade -y
@@ -70,7 +71,7 @@ sudo apt-get upgrade -y
 #--------------------------------------------------
 # Install PostgreSQL Server
 #--------------------------------------------------
-#verification du package PostgreSQL depuis la variable declarer, si vrai, on force l'installation sinon on installe le package postgresql-client-common
+
 if [ $INSTALL_POSTGRESQL = "True" ]; then
 	echo -e "\n---- Install PostgreSQL Server ----"
 	sudo apt-get install postgresql -y
@@ -82,7 +83,7 @@ else
 	sudo apt-get install -y postgresql-client
 	echo -e "\n POSTGRESQL isn't installed due to the choice of the user! and no postgresql user have been created"
 fi
-# installation des package de dependance a l'utilisation d'odoo
+
 sudo apt-get install --reinstall libpq-dev
 #psql -U postgres -c "ALTER USER $OE_USER WITH PASSWORD '$DB_PASSWORD'"
 #--------------------------------------------------
@@ -105,6 +106,8 @@ sudo pip3 install Werkzeug==0.14.1
 echo -e "\n--- Install other required packages"
 sudo apt-get install node-clean-css -y
 sudo apt-get install node-less -y
+sudo apt-get install nodejs npm -y
+sudo npm install -g rtlcss
 sudo apt-get install python3-gevent -y
 sudo apt-get install python3-psycopg2 -y
 
@@ -156,14 +159,13 @@ echo -e "\n---- Create Log directory ----"
 sudo mkdir /var/log/$OE_USER
 sudo chown $OE_USER:$OE_USER /var/log/$OE_USER
 
-
 #--------------------------------------------------
 # Install ODOO
 #--------------------------------------------------
 echo -e "\n==== Installing ODOO Server ===="
 sudo git clone --depth 1 --branch $OE_VERSION https://www.github.com/odoo/odoo $OE_HOME_EXT/
 
-# --- install requirements odoo 12
+# --- install requirements odoo 16
 sudo pip3 install wheel
 sudo pip3 install -r $OE_HOME_EXT/requirements.txt
 
@@ -373,57 +375,73 @@ sudo mv ~/$OE_CONFIG /etc/init.d/$OE_CONFIG
 sudo chmod 755 /etc/init.d/$OE_CONFIG
 sudo chown root: /etc/init.d/$OE_CONFIG
 
-= "upstream odoo {\n
-    server 127.0.0.1:8090;\n
-}\n
-server {\n
-    listen      80;\n
-    server_name $SERVER_NAME;\n
-    ssl on;
-    ssl_certificate /etc/nginx/ssl/certificate.admin-serv.net.crt;
-    ssl_certificate_key     /etc/nginx/ssl/admin-serv.net.deprotected.key;
-    access_log  /var/log/nginx/odoo.access.log;\n
-    error_log   /var/log/nginx/odoo.error.log;\n
-    proxy_buffers 16 64k;\n
-    proxy_buffer_size 128k;\n
-    location / {\n
-        proxy_pass http://localhost:$OE_PORT;\n
-        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;\n
-        proxy_redirect off;\n
-        proxy_set_header    Host            $host;\n
-        proxy_set_header    X-Real-IP       $remote_addr;\n
-        proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;\n
-        proxy_set_header    X-Forwarded-Proto https;\n
-    }\n
-    location ~* /web/static/ {\n
-        proxy_cache_valid 200 60m;\n
-        proxy_buffering on;\n
-        expires 864000;\n
-        proxy_pass http://localhost:$OE_PORT;\n
-    }\n
-    location /longpolling {\n
-        proxy_pass http://127.0.0.1:8072;\n
-    }\n
-}\n
-"
-if [ $INSTALL_NGINX = "True" ]; then
+
+
+if [ $INSTALL_NGINX = "True" ]  && [ $SERVER_NAME != "False" ];  then
+    CONTENT_NGINX="upstream odoo {
+    server 127.0.0.1:$OE_PORT;
+    }
+    server {
+        server_name $SERVER_NAME;
+
+
+        access_log  /var/log/nginx/$OE_USER.access.log;
+        error_log   /var/log/nginx/$OE_USER.error.log;
+        proxy_buffers 16 64m;
+        proxy_buffer_size 128m;
+        client_max_body_size 200m;
+        location / {
+            proxy_pass http://localhost:$OE_PORT;
+            proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+            proxy_redirect off;
+            proxy_set_header    Host            \$host;
+            proxy_set_header    X-Real-IP       \$remote_addr;
+            proxy_set_header    X-Forwarded-For \$proxy_add_x_forwarded_for;
+            proxy_set_header    X-Forwarded-Proto https;
+        }
+        location ~* /web/static/ {
+            proxy_cache_valid 200 60m;
+            proxy_buffering on;
+            expires 864000;
+            proxy_pass http://localhost:$OE_PORT;
+        }
+        location /longpolling {
+            proxy_pass http://127.0.0.1:8072;
+        }
+
+    }"
 	echo -e "* Install, config Nginx and SSL"
 	sudo apt install nginx
+    sudo rm /etc/nginx/sites-available/default
+    sudo rm /etc/nginx/sites-enabled/default
+    echo -e "* Create nginx config file"
 
-	if [ $ADD_SSL = "True" ] && [ $SSL_PEM_KEY != "False" ] && [ $SSL_PRV_KEY != "False" ]; then
-		sudo su root -c "echo '$CONTENT_NGINX' > /etc/nginx/sites-available/$OE_USER"
-		sudo ln -s /etc/nginx/sites-available/$OE_USER /etc/nginx/sites-enabled/$OE_USER
-		sudo chown root:root /etc/nginx/sites-available/$OE_USER
-		sudo chmod 775 /etc/nginx/sites-available/$OE_USER
-
-		sudo chown root:root /etc/nginx/sites-enabled/$OE_USER
-		sudo chmod 775 /etc/nginx/sites-enabled/$OE_USER
-	fi
-
+	sudo su root -c "echo $CONTENT_NGINX > /etc/nginx/sites-available/$OE_USER"
+	sudo ln -s /etc/nginx/sites-available/$OE_USER /etc/nginx/sites-enabled/$OE_USER 
+	sudo chown root:root /etc/nginx/sites-available/$OE_USER
+	sudo chmod 775 /etc/nginx/sites-available/$OE_USER
+	
+	sudo chown root:root /etc/nginx/sites-enabled/$OE_USER
+	sudo chmod 775 /etc/nginx/sites-enabled/$OE_USER
+    sudo /etc/init.d/nginx restart
+    echo -e "* Nginx installed"
+	
 fi
+
+if [ $INSTALL_NGINX = "True" ] && [ $ENABLE_SSL = "True" ] && [ $ADMIN_EMAIL != "odoo@example.com" ]  && [ $WEBSITE_NAME != "_" ];then
+  sudo add-apt-repository ppa:certbot/certbot -y && sudo apt-get update -y
+  sudo apt-get install python3-certbot-nginx -y
+  sudo certbot --nginx -d $WEBSITE_NAME --noninteractive --agree-tos --email $ADMIN_EMAIL --redirect
+  sudo service nginx reload
+  echo "SSL/HTTPS is enabled!"
+else
+  echo "SSL/HTTPS isn't enabled due to choice of the user or because of a misconfiguration!"
+fi
+
 
 echo -e "* Start ODOO on Startup"
 sudo update-rc.d $OE_CONFIG defaults
+sudo pip3 install -r $OE_HOME_EXT/requirements.txt
 
 echo -e "* Starting Odoo Service"
 sudo su root -c "/etc/init.d/$OE_CONFIG start"
