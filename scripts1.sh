@@ -3,6 +3,7 @@
 #recuperation de l'heure du systeme sous format HH:MM
 HEURE=$(date +%H:%M)
 
+
 #creation du fichier save preceder par l'heure de la creation
 touch /home/karizma/Bureau/${HEURE}save.txt
 ###
