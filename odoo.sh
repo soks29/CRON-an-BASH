@@ -6,14 +6,14 @@
 
 ##fixed parameters
 #odoo
-OE_USER="odoo16"
+OE_USER="odoo"
 OE_HOME="/opt/$OE_USER"
 OE_HOME_EXT="/opt/$OE_USER/odoo-server"
 #The default port where this Odoo instance will run under (provided you use the command -c in the terminal)
 #Set to true if you want to install it, false if you don't need it or have it already installed.
 INSTALL_WKHTMLTOPDF="True"
 #Set to true if you want to install it, false if you don't need it or have it already installed.
-INSTALL_POSTGRESQL="False"
+INSTALL_POSTGRESQL="True"
 CREATE_USER_POSTGRESQL="True"
 INSTALL_NGINX="True"
 ADD_SSL="False"
